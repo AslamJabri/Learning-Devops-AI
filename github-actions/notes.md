@@ -19,3 +19,8 @@ first thing after installing the git is to set the global username and email
     
 git stores all the config 
     (directory) ~/.gitconfig
+
+git init - for initilizing the local git 
+git add . - this will stage the files for next commit
+git commit -m - this will create a commit that includes all staged changes it also takes a message which we can add with commit
+git status - will give you the status of staged files and ready to commit
