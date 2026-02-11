@@ -27,3 +27,9 @@ Resource type and Name together serve as an identifier for a given resource and 
 when we want to destroy all resources we can use terraform destry
 But when we want to keep one and delete another we use -target flag 
     terraform destroy -target <resource-name>.local-name
+
+# Authentication 
+we can never hardcode the secrets in the provider block.
+ - The provider can source credentials and other settings from shared configuration and credential files. The issue here is every person might have a different location so hardcoding the path can create the prob.
+    Default config location "$HOME/.aws/config"
+ - 
