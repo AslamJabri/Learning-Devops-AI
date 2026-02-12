@@ -32,3 +32,10 @@ git checkout <commit-id> - This will take us to the old version of the project
 git checkout main - this will get back to the latest commit.
 git revert <id> - revert changes of commit by creating a new commit. It wont delete the previous commit but adds new commit.
 git reset --hard <id> - when we want to delete the commit we use this command.We will lose all the changes happend in that commit. Use it with care.
+
+git branch <branch name> - creating the branch
+git merge <branch name>> - merge the branch
+git branch - will view all the branches
+git checkout <branchname> - move to another branch
+git branch -D <branch name> - delete the branch
+git checkout -b <branchname> - create and get into that branch
