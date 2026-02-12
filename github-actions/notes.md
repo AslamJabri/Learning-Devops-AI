@@ -41,3 +41,14 @@ git branch -D <branch name> - delete the branch
 git checkout -b <branchname> - create and get into that branch
 
 git merge <branch name> - this will merge with the branch
+
+
+git remote add <anyname> <URL> - connecting to the remote repository
+git remote set-url origin https://<github username>@github.com/repo.git - This will tell git this is the user and it will prompt for entering the access token. 
+git push --set-upstream origin main - this will make the connection to that repo
+
+git pull - This will downloads the latest code from github
+git clone <url> <anyname> - this will create the new project on the machine which will download the code from remote repo.
+
+git remote - this will give you the list of remote URL
+git remote get-url <name> - this will give the remote URL
