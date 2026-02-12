@@ -20,7 +20,15 @@ first thing after installing the git is to set the global username and email
 git stores all the config 
     (directory) ~/.gitconfig
 
+## Commands
+
 git init - for initilizing the local git 
 git add . - this will stage the files for next commit
 git commit -m - this will create a commit that includes all staged changes it also takes a message which we can add with commit
 git status - will give you the status of staged files and ready to commit
+git log  - this will give all the logs
+(HEAD -> main) - the main is the branch and which state is currently loaded thats where the HEAD will be pointing on the commit.
+git checkout <commit-id> - This will take us to the old version of the project
+git checkout main - this will get back to the latest commit.
+git revert <id> - revert changes of commit by creating a new commit. It wont delete the previous commit but adds new commit.
+git reset --hard <id> - when we want to delete the commit we use this command.We will lose all the changes happend in that commit. Use it with care.
