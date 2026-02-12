@@ -52,3 +52,9 @@ git clone <url> <anyname> - this will create the new project on the machine whic
 
 git remote - this will give you the list of remote URL
 git remote get-url <name> - this will give the remote URL
+
+If we clone some public repo and want to make change in the repo we have to reachout to the owner of the repo asking for the permissions. 
+
+Pull request is the request that tells the owner of repo to review the code and merge it to the main branch.
+
+Fork a repo - it is cloning and you will own it to your local machine make change and push to your owned repo.
