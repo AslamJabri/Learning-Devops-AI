@@ -39,3 +39,5 @@ git branch - will view all the branches
 git checkout <branchname> - move to another branch
 git branch -D <branch name> - delete the branch
 git checkout -b <branchname> - create and get into that branch
+
+git merge <branch name> - this will merge with the branch
