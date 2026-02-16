@@ -25,3 +25,15 @@ If *.tfvar name dont start with terraform then we explicitly have to mention the
 When we have multiple tfvars file
     - we can specify which tfvars to take
         terraform plan -var-file="prod.tfvars"
+
+# Variable Definition Precedence
+what if values for variable are different?
+- Terraform loads variables in the following order, with later sources taking precendence over earlier ones:
+1. Environment Variables
+2. The terraform .tfvars file if present
+3. The terraform.tfvars.json file if present
+4. Any *.auto.tfvars or *.auto.tfvars.json files in lexocal order of their filenames
+5. any -var and -var-file options on the command line
+For example :
+    if we have env variable and also the variable mentioned in .tfvar file and also we give in command line by using flag -var then it will use -var variable
+    
