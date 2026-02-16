@@ -58,3 +58,35 @@ If we clone some public repo and want to make change in the repo we have to reac
 Pull request is the request that tells the owner of repo to review the code and merge it to the main branch.
 
 Fork a repo - it is cloning and you will own it to your local machine make change and push to your owned repo.
+
+
+# GITHUB Actions FuNDAMENTals
+
+Workflows - These are attached to the code repository. They contain one or more jobs.These trigger upon events. 
+Jobs - the workflows contains the jobs. Define a runner (execution environment). Contain one or more steps. Can be conditional.
+Steps - The jobs contains the steps where we specify the actual thing to be done.It can either be a shell script or an action. Can use custom third party actions.They can also be conditional.
+
+# workflow
+
+name: first-workflow
+on: workflow_dispatch
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Greeting
+        run: echo "Hello World!"
+      - name: last job
+        run: echo "Done Job bye!"
+      - name: Running multi line commands
+        run: |
+            echo "This is a "
+            echo "Multiline line script"
+    
+
+Events - workflow Triggers These are repository related like push,pull_request,create,fork,issues,issue_comment,watch,discussion and many more and there are other events like workflow dispatch, repository dispatch, schedule, workflow_call etc.
+
+There is a useful documentation on events on workflow github (Events that trigger workflows).
+
+Actions are seperate feature offered by github. Its a custom or third party application that performs frequently repeated task.
+You can build your own actions as well or use the community ones.
