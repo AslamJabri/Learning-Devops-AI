@@ -43,3 +43,22 @@ variable "types"{
 By default a resource block configures one real infrastructure object. the count argument accepts a whole number and creates that many instances of the resources.
 # Challenges with Count
 The instances created through count and identical copies but you might want to customize certain properties for each one.
+
+# Count.Index
+when using count you can also make use of count.index which allows better flexibility. This attribute holds a distinct index number, starting from 0 that uniquely identifies each instance creayed by counted meta-argument.
+
+tags = {
+    Name = payment-system-${count.index}
+}
+we can also create the list and use count index. for the values in the list.
+
+# Conditional Expression
+Conditional expressions in terraform allow you to choose between two values based on a condition.
+Syntax: 
+    condition ? true_value:false_value
+Use-Case
+If environment is development,t2micro instance type should be used.
+If environment is not development , m5.large instance type should be used.
+
+# Conditional Expression with multiple variables
+In the following example only if env=production and region=us-east-1 the larger instance type of m5.large can be used.
