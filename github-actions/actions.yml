@@ -1,0 +1,32 @@
+name: first-workflow
+on: [push,pull]
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Greeting
+        run: echo "Hello World!"
+      - name: last job
+        run: echo "Done Job bye!"
+      - name: Get Code
+        uses: actions/checkout@v6.0.2
+      - name: Install Nodejs
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 18
+      - name: check the repo
+        run: ls -l
+      - name: check the node version
+        run: node --version
+  second-jobs:
+    needs: first-job
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v3
+      - name: install python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: 3.12
+      - name: check python version
+        run: python3 --version
