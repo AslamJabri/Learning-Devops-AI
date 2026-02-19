@@ -90,3 +90,6 @@ There is a useful documentation on events on workflow github (Events that trigge
 
 Actions are seperate feature offered by github. Its a custom or third party application that performs frequently repeated task.
 You can build your own actions as well or use the community ones.
+every job has its own runner.
+
+# Expression and context
