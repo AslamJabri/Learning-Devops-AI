@@ -37,3 +37,24 @@ what if values for variable are different?
 For example :
     if we have env variable and also the variable mentioned in .tfvar file and also we give in command line by using flag -var then it will use -var variable
     
+
+# Local Variables
+Local Values are similar to variables in a sense that it allows you to store data centrally and that can be referenced in multiple parts of configurations.
+
+syntax: 
+    locals {
+        comman_tags = {
+            Team = "payment-team"
+        }
+    }
+    resource "aws_instance" "myec2"{
+        ami = "sdfghjkl"
+        instance_type = "t2.micro"
+        tags = local.common_tags
+    }
+
+When we already have variable why do we need local variables?
+ You can add expressions to locals, which allows you to complete values dynamically. Functions calls cannot be made into variables.
+ Variable value can be defined in wide variety of places like terraform.tfvars,ENV,variables.CLI so on.
+ Locals are more of a private resource. You have to directly modify the code.
+ Local values are created by a locals block but you reference them as attributes on an object named local.
