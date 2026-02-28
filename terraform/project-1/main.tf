@@ -1,7 +1,7 @@
 locals {
     name_prefix = format("%s-%s", var.project_name, var.environment)
     common_tags ={
-        Createdat = formatdate("EEEE, DD-MMM-YY hh:mm:ss ZZZ",timestamp()),
+        Createdat = formatdate("DD-MMM-YY hh:mm:ss ZZZ",timestamp()),
         CreatedBy = "Terraform"
     }
 }
