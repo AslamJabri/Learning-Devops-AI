@@ -16,6 +16,6 @@ The -replace option with terraform apply to force terraform to replace an object
 
 - terraform apply -replace="aws_instance.myec2"
 
-Points to Note
+# Points to Note
 Similar kind of functionality was achieved using terraform taint command in older versions of terraform.
 Form Terraform v0.15.2 and later hashicorp recommended using the -replcae option with terraform apply.
