@@ -36,3 +36,49 @@ output values make information about your infrastructure available on the cli an
 # Accessing Child Module Outputs
 Ensure to include output values in the module code for better flexibility and integration with other resources and projects.
 Format : module.<MODULE NAME>.<OUTPUT NAME>
+
+
+# Root and Child Modules
+
+Root module reside in the main working directory of your terraform configuration. This is the entry point for your infrastructure definition
+
+Child module that has been called by another module is often referred to as child module.
+
+# Standard Module Structure
+The standard module structure is a file and directory layout hashicorp recommends for reusable modules.
+A minimal recommended module following the standard structure is shown below
+  $ directory 
+    |-- README.md
+    |-- main.tf
+    |-- variables.tf
+    |-- outputs.tf
+# Scope the requirements for module creation
+- A team wants to provision their infrastructure using terraform.
+- Architecture diagram depicts the desired outcome.
+- In this scenario, a team of terraform producers who write terraform code from scratch, will build a collection of modules to provision the infrastructure and applications.
+- The members of the team in charge of the application will consume these modules to provision the infrastructure they need.
+- After reviewing the consumers team's requirement the producer team has broken up the application infrastructure into following modules:
+- Network, Web, App, Database, Routing and Security.
+
+# Multiple Provider blocks
+
+when we have two security groups one for dev which should come in us-east-1 and other one prod which should come in mumbai then how can we handle this.
+- Passing Providers Explicitly
+    You can use provider argument within a module block to explicitly define which provider configurations are available to the chile module.
+
+- In the child module you need to also declare the configuration aliases for the provider.
+- you can use provider meta-argument within resource to choose appropriate provider configuration.
+
+# Terraform Workspace
+- Can we have multiple state file for single terraform configuration?
+- Can we manage different env's through it seperately.
+ For achieving this we can make use of terraform workspace
+ - It enables us to manage multiple set of deployments from the same set of configuration file.
+ - each workspace will have there own tfstate file.
+
+ commands:
+  To list the workspaces - terraform workspace list
+  Switch to another workspace - terraform workspace select dev
+  create new workspace - terraform workspace new <workspace name>
+  show the current workspace - terraform workspace show <workspace name>
+  delete the workspace - terraform workspace delete <workspace name>
