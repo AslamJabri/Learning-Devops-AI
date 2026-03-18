@@ -101,3 +101,9 @@ Points To note
 Terraform 1.5 introduce automatic code generation for imported resources.
 This dramatically reduces the amount of time you need to spend writing code to match the imported
 This feature is not available in the older version.
+
+# Removed Block
+
+The removed block allows you to declare your intention to remove a resource from the tarraform state.
+It turns the imperative terraform state rm command into declarative configuration block.
+
