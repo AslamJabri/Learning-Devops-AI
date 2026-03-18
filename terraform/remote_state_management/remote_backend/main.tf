@@ -17,3 +17,10 @@ resource "aws_iam_user" "dev" {
 resource "aws_security_group" "prod" {
   name = "terraform-firewall"
 }
+
+removed {
+  from = aws_iam_user.dev
+  lifecycle {
+    destroy = false
+  }
+}

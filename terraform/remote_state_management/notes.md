@@ -85,4 +85,19 @@ In cross project collaboration.
 
  Solution:
  - In this terraform import can automatically create terraform configuration files for the resources you want to import.
- 
+
+import {
+    to = aws_security_group.mysg
+    id = "securitygroup_id"
+}
+
+ terraform plan -generate-config-out=sg.tf
+
+ This will create the mysg file which have all the resource which we wanted to import. but this will not create the state file only the code is created
+ terraform apply
+ this will create the state file.
+
+Points To note
+Terraform 1.5 introduce automatic code generation for imported resources.
+This dramatically reduces the amount of time you need to spend writing code to match the imported
+This feature is not available in the older version.
