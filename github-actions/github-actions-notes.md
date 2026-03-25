@@ -1,0 +1,113 @@
+# GitHub Actions: Core Architecture & Building Blocks
+
+GitHub Actions is an **event-driven** automation platform that allows you to execute workflows based on specific triggers in your repository.
+
+---
+
+## 1. The Building Blocks (Hierarchy)
+
+### 🏗️ Workflow
+The top-level automated process.
+- **Location:** Stored in `.github/workflows/{filename}.yml`.
+- **Capacity:** You can have multiple workflows (e.g., `test.yml`, `deploy.yml`).
+- **Trigger:** Attached to a repository and activated by specific events.
+
+### 🏃 Jobs
+A set of steps that execute on the same runner.
+- **Runners:** Define the OS required (e.g., `runs-on: ubuntu-latest`).
+- **Parallelism:** Jobs run in **parallel** by default to save time.
+- **Conditionals:** Jobs can be made **sequential** using the `needs` keyword.
+- **Requirement:** A job must contain at least one step.
+
+### 🐾 Steps
+Individual tasks that run sequentially inside a job.
+- **Execution:** Can run a **Shell Script** (`run:`) or an **Action** (`uses:`).
+- **Actions:** Predefined, reusable scripts (e.g., `actions/checkout@v4`).
+- **State:** Steps in the same job share the same runner and filesystem.
+
+[Image of GitHub Actions workflow components architecture]
+
+---
+
+## 2. Events & Triggers (`on:`)
+
+Events are the "Activity" that kicks off a workflow.
+
+### Common Repository Events
+| Event | Description |
+| :--- | :--- |
+| `push` | Triggers when code is pushed to the repo. |
+| `pull_request` | Triggers when a PR is created or updated. |
+| `workflow_dispatch` | Adds a **Manual Run** button in the Actions tab. |
+| `schedule` | Runs at specific times using Cron syntax. |
+
+### Activity Types
+Provides granular control over *which action* triggers the workflow.
+```yaml
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+
+3. Filters (Precision Control)
+
+Filters prevent unnecessary runs by narrowing down the target of the trigger.
+Branch Filters
+
+Target specific branches using exact names or patterns.
+
+    main: Matches the main branch exactly.
+
+    'dev-*': Matches dev-new, dev-patch.
+
+    'feat/**': Matches feat/login, feat/api/v2 (the ** matches nested slashes).
+
+Path Filters
+
+Trigger based on which files were modified.
+
+    paths: Run only if files in these folders change (e.g., src/**).
+
+    paths-ignore: Skip the workflow if only these files change (e.g., .github/** or README.md).
+
+## Implementation
+name: workflow-exercise
+
+on: 
+  push:
+    branches:
+      - 'main'
+      - 'feat/**'
+      - 'dev/*'
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+    types: [opened]
+
+jobs:
+  LTD-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Pipeline
+        run: |
+          npm run lint
+          npm run test
+          npm run build
+
+Note:
+ By default pull request based on forks do not trigger a workflow.
+
+# Cancelling and Skipping Workflows
+cancelling: By default workflows get cancelled if job fails also by default a job fails atleast one step fails. also the workflows can be cancelled manually.
+skipping: 
