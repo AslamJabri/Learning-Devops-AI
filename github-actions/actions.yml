@@ -18,15 +18,32 @@ jobs:
         run: ls -l
       - name: check the node version
         run: node --version
-  second-jobs:
-    needs: first-job
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.publish.outputs.script-file }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: install Dependencies
+        run: npm ci
+      - name: Build Website
+        run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+      - name: Upload artificats
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: get code
-        uses: actions/checkout@v3
-      - name: install python
-        uses: actions/setup-python@v6.2.0
+      - name: Get build artifact
+        uses: actions/download-artifact@v3
         with:
-          python-version: 3.12
-      - name: check python version
-        run: python3 --version
+          name: dist-files
+      - name: output-filename
+        run: echo "${{ needs.build.outputs.script-file }}"
