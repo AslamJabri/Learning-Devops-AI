@@ -1,7 +1,14 @@
 name: first-workflow
 on: [push,pull]
+env:
+  MONGO_DB_NAME: db-demo
+  MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
 jobs:
   first-job:
+    environment: testing
+    env:
+      MONGO_DB_NAME: db-demo-test # this will override the value
+      PORT: 8080
     runs-on: ubuntu-latest
     steps:
       - name: Print Greeting
@@ -18,6 +25,11 @@ jobs:
         run: ls -l
       - name: check the node version
         run: node --version
+      - name: Run server
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
+      - name: Output Information
+        run: | 
+          echo "MONGO_DB_NAME: ${{ env.MONGO_DB_NAME }}"
   build:
     runs-on: ubuntu-latest
     outputs:
@@ -25,6 +37,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Caching dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: install Dependencies
         run: npm ci
       - name: Build Website
@@ -41,6 +58,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Caching dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: install Dependencies
+        run: npm ci
       - name: Get build artifact
         uses: actions/download-artifact@v3
         with:

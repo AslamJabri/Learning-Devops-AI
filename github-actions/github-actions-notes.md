@@ -122,3 +122,129 @@ Artificats output files and folders typically used for sharing log files app bin
 Job outputs are simple values typically used for reusing a value in different jobs.
 
 # Dependency Caching
+We need this so that we dont repeat the job everytime for installation and use the already installed dependencies.
+
+# Points
+Artifacts:
+    - Jobs often produces assets that should be shared or analysed.
+    - These assets are referred to as artifacts (or Job artifacts)
+    - Github actions provides actions for uploading and downloading
+        - eg: deploybale websites,files,logs etc
+Outputs:
+    - Besides artifacts steps can produce and share simple values
+    - These outputs are shared via ::set-output
+    - Jobs can pick up and share step outputs via step context
+    - Other Jobs can use job outputs via the needs context
+Caching: 
+    - Caching can help speed up repeated slow Steps
+    - Typically use-case caching dependencies
+    - But any files and folders can be cached
+    - The cache action automatically stores and updates values (based on cache key)
+    - important - Dont use caching for artifacts.
+
+
+# *** Environment Variables & Secrets *** 
+
+In GitHub Actions, managing sensitive information and configuration data is split into two categories: **Environment Variables** (non-sensitive configuration) and **Secrets** (encrypted sensitive data).
+
+## 1. Environment Variables
+Environment variables allow you to store non-sensitive configuration data (like a compiler flag or a database name) that your workflow needs.
+
+### Scopes of Variables
+You can define variables at three different levels:
+* **Workflow level:** Available to all jobs in the YAML file.
+* **Job level:** Available only to a specific job.
+* **Step level:** Available only to a specific step.
+
+### Default Environment Variables
+GitHub provides built-in variables that are always available, such as:
+* `$GITHUB_REF`: The branch or tag ref that triggered the workflow.
+* `$GITHUB_REPOSITORY`: The owner and repository name.
+* `$GITHUB_SHA`: The commit ID that triggered the workflow.
+
+### Syntax Example
+
+env:
+  NODE_VERSION: '20' # Workflow level
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DB_NAME: test_db # Job level
+    steps:
+      - name: Run script
+        env:
+          API_URL: https://api.example.com # Step level
+        run: echo "Connecting to $API_URL"
+
+## 2. GitHub Secrets
+Secrets are encrypted variables created at the **Organization**, **Repository**, or **Environment** level. They are specifically designed for sensitive data like API keys, SSH keys, or passwords.
+
+### Key Characteristics
+* **Masking:** GitHub automatically masks secrets in logs (replacing them with `***`).
+* **Encryption:** Secrets are encrypted using [Libsodium](https://libsodium.gitbook.io/doc/) before they reach GitHub and remain encrypted until used in a runner.
+* **Write-only:** Once a secret is saved, you cannot view it again in the UI; you can only update or delete it.
+
+### Using Secrets in a Workflow
+You access secrets using the `secrets` context:
+
+steps:
+  - name: Login to Docker Hub
+    run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+---
+
+## 3. Variables vs. Secrets: Comparison Table
+
+| Feature | Environment Variables (`env`) | GitHub Secrets (`secrets`) |
+| :--- | :--- | :--- |
+| **Primary Use** | Non-sensitive config (URLs, Ports) | Sensitive data (Tokens, Passwords) |
+| **Visibility** | Plain text in YAML or Settings | Masked in logs (`***`) |
+| **Editing** | Directly in YAML or UI | UI only (Write-only) |
+| **Max Size** | 48 KB | 64 KB |
+| **Best Practice** | Use for workflow logic/config | Use for authentication/security |
+
+---
+
+## 4. Environment-Specific Secrets
+For DevSecOps professionals, using **Environments** is a best practice. This allows you to define different secrets for `Production`, `Staging`, and `Development`.
+
+* **Protection Rules:** You can require manual approval before a job can access secrets in a "Production" environment.
+* **Access:** Accessed via `jobs.<job_id>.environment`.
+
+
+jobs:
+  deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - run: deploy_cmd --key ${{ secrets.PROD_K8S_SECRET }}
+
+
+---
+
+## 5. Security Best Practices
+* **Never Log Secrets:** Even though GitHub masks them, avoid `echo ${{ secrets.TOKEN }}` as attackers can use encoding (base64) to bypass masking.
+* **Least Privilege:** Use **OpenID Connect (OIDC)** where possible (e.g., with AWS or Azure) to avoid storing long-lived secrets in GitHub.
+* **Limit Scopes:** If a secret is only needed for one job, define it at the job level.
+* **Use `vars` context:** For non-sensitive data that you want to manage via the GitHub UI instead of hardcoding in YAML, use **GitHub Variables** (`vars.VARIABLE_NAME`).
+
+
+## Summary
+Environment Variables:
+ - Dynamic Values used in code
+ - May differ from workflow to workflow
+ - Can be defined on workflow,Job or step level
+ - Can be used in code and in github actions workflow
+ - Accessible via interpolation and the env context object
+
+Secrets:
+ - Some dynamic Values should not be exposed everywhere
+ - Secrets can be stored on repository level or via Environments
+ - Secrets can be referenced via the secrets context object
+
+Github Actions Environment:
+ - Jobs can reference different github actions environment.
+ - Environments allow you to set up extra protection rules.
+ - You can also store secrets on environment level.
