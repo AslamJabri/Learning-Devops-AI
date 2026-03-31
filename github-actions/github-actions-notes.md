@@ -248,3 +248,21 @@ Github Actions Environment:
  - Jobs can reference different github actions environment.
  - Environments allow you to set up extra protection rules.
  - You can also store secrets on environment level.
+
+ # Controlling Execution Flow
+ The default behaviour of the pipeline is when a step is failed the whole pipeline fails. In this we have to make a sure if any step which is not necessary even if it fails we still need the pipeline to run and complete the steps. 
+ - Running Jobs and steps conditionally
+ - Running Jobs with a matrix
+ - Re-Using workflows
+
+# Conditional Jobs and Steps
+Jobs - Conditional Executions via if field
+Steps - Conditional Execution via if field
+      - ignore  errors via continue-on-error field 
+ then we can evaluate conditions via expressions.
+
+ Special Conditional Functions
+ - failure() - Return true when any previous step or job failed
+ - success() - Returns true when none of the previous steps have failed
+ - always() - Causes the step to always execute even when cancelled
+ - cancelled() - Returns true if the workflow has been cancelled.

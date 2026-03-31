@@ -46,6 +46,15 @@ jobs:
         run: npm ci
       - name: Build Website
         run: npm run build
+      - name: Test code
+        id: run-test
+        run: npm run test
+      - name: Upload test report
+        if: failure() && steps.run-test.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
       - name: Publish JS filename
         id: publish
         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
