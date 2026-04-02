@@ -1,0 +1,26 @@
+name: Reusable-workflow
+on: 
+  workflow_call:
+    inputs:
+      artifact-name: 
+        description: the name of deployable artifact
+        required: false
+        default: dist
+        type: string
+    secrets:
+      some-secret:
+        required: true
+    outputs:
+      result:
+        description: the result of deployment action
+        value:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: GET code
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.artifact-name }}
+    - name: output info
+      run: echo "callable workflow"

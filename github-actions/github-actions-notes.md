@@ -266,3 +266,11 @@ Steps - Conditional Execution via if field
  - success() - Returns true when none of the previous steps have failed
  - always() - Causes the step to always execute even when cancelled
  - cancelled() - Returns true if the workflow has been cancelled.
+# Matrix Jobs
+- Run multiple job configurations in parallel
+- Add or 
+# Reusable Workflows
+
+A Reusable Workflow is a GitHub Actions feature that allows you to define an entire CI/CD pipeline in one YAML file and "call" it from other workflows.
+
+Think of it as a "Function" for your infrastructure. Instead of copy-pasting the same 50 lines of deployment code into every repository, you write it once in a central place and reference it everywhere else.

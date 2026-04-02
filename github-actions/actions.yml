@@ -5,6 +5,16 @@ env:
   MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
 jobs:
   first-job:
+    continue-on-error: true
+    strategy:
+    matrix:
+        node-version: [12,14,16]
+        include: 
+        - node-version: 18
+          os: ubuntu-latest
+        exclude:
+        - node-version: 12
+          os: windows-latest
     environment: testing
     env:
       MONGO_DB_NAME: db-demo-test # this will override the value
@@ -20,7 +30,7 @@ jobs:
       - name: Install Nodejs
         uses: actions/setup-node@v6.2.0
         with:
-          node-version: 18
+            node-version: ${{ matrix.node-version }}
       - name: check the repo
         run: ls -l
       - name: check the node version
@@ -31,22 +41,29 @@ jobs:
         run: | 
           echo "MONGO_DB_NAME: ${{ env.MONGO_DB_NAME }}"
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12,14,16]
+        os: [ubuntu-latest,macos]
+    runs-on: ${{ matrix.os }}
     outputs:
       script-file: ${{ steps.publish.outputs.script-file }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
       - name: Caching dependencies
+        id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: install Dependencies
+        if: steps.cache.output.cache-hit != 'true'
         run: npm ci
       - name: Build Website
         run: npm run build
       - name: Test code
+        continue-on-error: true
         id: run-test
         run: npm run test
       - name: Upload test report
@@ -64,15 +81,18 @@ jobs:
           name: dist-files
           path: dist
   deploy:
+    outputs:
+      result: ${{ steps.set-result.output.step-result }}
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Caching dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Get build artifact
         uses: actions/download-artifact@v3
@@ -80,3 +100,25 @@ jobs:
           name: dist-files
       - name: output-filename
         run: echo "${{ needs.build.outputs.script-file }}"
+      - name: Set result output
+        id: set-result
+        run: echo "::set-output name=step-result::success"
+  report:
+    needs: [first-job, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Failure information
+        run: | 
+          echo " The job has been failed"
+          echo "${{ toJSON(github) }}"
+
+  reusable-workflow-deploy:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/reusable-workflow.yml
+    with:
+      artifact-name: dist-files
+    secrets: 
+      some-secret: ${{ secrets.some-secret }}
+    
