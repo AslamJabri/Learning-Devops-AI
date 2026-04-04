@@ -274,3 +274,20 @@ Steps - Conditional Execution via if field
 A Reusable Workflow is a GitHub Actions feature that allows you to define an entire CI/CD pipeline in one YAML file and "call" it from other workflows.
 
 Think of it as a "Function" for your infrastructure. Instead of copy-pasting the same 50 lines of deployment code into every repository, you write it once in a central place and reference it everywhere else.
+
+# Jobs and docker Containers
+- Packages that contain code its execution environment
+- Advantage reproducible execution environment and results
+These ca still runs on github actions runners
+- Your containerized job is hosted by the runner
+- steps execute inside the container
+- you can also create services, utility containers used by your steps
+
+# Containers for Jobs
+- You can run jobs in pre defined environments
+- Build your own container images or use public images
+- Great for jobs that need extra tools or lots of customizaztion
+
+# Service Containers
+- Extra services can be used by steps in jobs
+- Based on custom images or public/community images

@@ -13,7 +13,7 @@ on:
     outputs:
       result:
         description: the result of deployment action
-        value:
+        value: ${{ jobs. }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
