@@ -67,3 +67,28 @@ terraform/security/password.txt
 .idea/
 .vscode/
 *.swp
+
+# Hugging Face & AI Models
+models/
+.cache/
+hub/
+*.bin
+*.onnx
+*.gguf
+*.safetensors
+
+# Vector Databases (ChromaDB, FAISS, etc.)
+# LangChain often creates these locally
+chroma/
+faiss_index/
+vector_store/
+# Avoid committing massive model weights
+checkpoints/
+data/
+*.ckpt
+.huggingface/
+
+# Environment variables for API keys (OpenAI, Anthropic, etc.)
+.env
+.env.*
+!.env.example
