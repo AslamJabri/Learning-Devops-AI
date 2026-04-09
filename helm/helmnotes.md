@@ -79,3 +79,5 @@
 * Release name must be unique in a namespace
 * Use correct `repo/chart` format while installing
 
+## Helm Upgrade with --set option
+    helm search repo mychart2 --versions - to see the versions of the chart
