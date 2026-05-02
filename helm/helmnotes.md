@@ -86,3 +86,97 @@ When Helm builds your YAML, it decides which value to use based on this hierarch
 3. **Default Values**: The standard `values.yaml` packaged inside the chart.
     
 
+## Upgrades & Version Control
+
+Helm allows you to manage specific versions of your application to ensure consistency across environments.
+
+- **Upgrade with Specific Version**:
+    
+    `helm upgrade <release-name> <repo/chartname> --version <version-number>`
+    
+    > **Note**: If you omit the `--version` flag, Helm will automatically upgrade the release to the **latest** version available in the repository.
+    
+
+---
+
+## Rollbacks: The Undo Button
+
+One of Helm's most powerful features is the ability to quickly revert to a previous state if a deployment fails.
+### 1. View Deployment History
+
+Before rolling back, check the revision history to identify which version you want to return to:
+
+`helm history <release-name>`
+
+- This command lists all revisions, their status, and when they were deployed.
+### 2. Perform a Rollback
+
+- **Rollback to Previous Version**:
+    
+    `helm rollback <release-name>`
+    
+    > **Note**: This will jump back exactly one revision (e.g., from Revision 5 to Revision 4).
+    
+- **Rollback to a Specific Revision**:
+    
+    `helm rollback <release-name> <revision-number>`
+    
+    > **Example**: `helm rollback my-app 2` will force the application back to the exact state it was in during Revision 2.
+    
+---
+## Uninstalling & Cleanup
+
+When removing an application, you have two choices depending on whether you want to leave a trail behind.
+
+### . Standard Uninstall
+
+`helm uninstall <release-name>`
+
+- **Result**: Removes all Kubernetes resources (Pods, Services, etc.) and wipes the release history.
+    
+- **Warning**: Once this is done, the release data is gone. You cannot rollback.
+    
+### . Uninstall with History Retention
+
+`helm uninstall <release-name> --keep-history`
+
+- **Result**: Removes all associated resources and marks the release as `uninstalled` (deleted), but **retains the revision history**.
+    
+- **Why use this?**: It allows you to **rollback to a deleted release**. If you accidentally uninstall the wrong app, you can bring it back to its exact previous state using `helm rollback <release-name> <revision>`.
+---
+## Advanced Automation & Safety Flags
+
+When implementing DevOps pipelines (e.g., Jenkins, GitHub Actions, or GitLab CI), these flags ensure your deployments are resilient and conflict-free.
+
+### 1. Handling Release Names in Pipelines
+
+`helm install <repo/chartname> --generate-name`
+
+- **The Problem**: Pipelines often fail if you try to install a release with a name that already exists (`Error: cannot re-use a name that is still in use`).
+    
+- **The Solution**: This flag automatically creates a unique name for the release. This is ideal for dynamic "Preview Environments" or "Ephemeral Clusters" where the specific name matters less than avoiding duplicate errors.
+    
+### 2. The "Atomic" Safety Net
+
+`helm install <release-name> <repo/chartname> --atomic`
+
+- **Behavior**: If the installation fails (e.g., a Pod stays in `ImagePullBackOff`), Helm will automatically **delete the release** and clean up all resources.
+    
+- **Included Logic**:
+    
+    - **Implicit `--wait`**: Setting `--atomic` automatically enables the `--wait` flag.
+        
+    - **Ready State**: Helm will not mark the release as "Successful" until every Kubernetes resource is in a **Ready** state.
+        
+### 3. Timeouts & Waiting
+
+`--wait` (enabled by default with `--atomic`)
+
+- Helm monitors the deployment and waits for resources (Pods, Services, etc.) to be fully operational before exiting.
+    
+- **`--timeout <duration>`**: Defines how long Helm should wait for Kubernetes operations.
+    
+    - **Default**: `5m0s` (5 minutes).
+        
+    - If the resources aren't ready within this window, the operation fails (and triggers the rollback/deletion if `--atomic` is used).
+ 
