@@ -180,3 +180,139 @@ When implementing DevOps pipelines (e.g., Jenkins, GitHub Actions, or GitLab CI)
         
     - If the resources aren't ready within this window, the operation fails (and triggers the rollback/deletion if `--atomic` is used).
  
+
+ Namespaces, Overrides, Debugging
+---
+## 🔹 Namespace Handling
+
+```bash
+helm install <release-name> <chart> \
+  --namespace <namespace> \
+  --create-namespace
+```
+
+- Default namespace = `default`
+    
+- `--create-namespace` → creates namespace if not exists
+    
+- Best practice:
+    
+    - ❌ Avoid `default`
+        
+    - ✅ Use `dev / staging / prod`
+        
+
+---
+## 🔹 Override Values
+
+```bash
+helm install <release> <chart> --set key=value
+```
+
+Example:
+
+```bash
+helm install myapp repo/chart --set service.nodePort=31240
+```
+
+- Overrides `values.yaml`
+    
+- Useful for quick changes (not for large configs)
+    
+---
+
+## 🔹 Dry Run (Simulation Mode)
+
+```bash
+helm install <release> <chart> --dry-run
+helm upgrade <release> <chart> --dry-run
+helm uninstall <release> --dry-run
+helm template <release> <chart>
+```
+
+- Does NOT create resources
+    
+- Shows what Helm will generate
+    
+- `helm template` → outputs YAML manifests
+
+---
+
+## 🔹 Debug Mode
+
+```bash
+helm install <release> <chart> --debug
+```
+
+- Shows detailed logs
+    
+- Helps in troubleshooting
+    
+---
+## 🔹 Dry Run + Debug (Best Combo)
+
+```bash
+helm install <release> <chart> --dry-run --debug
+```
+
+- See full rendered manifests + logs
+    
+
+---
+## 🔹 Helm Get Commands (Inspect Release)
+
+```bash
+helm get values <release>
+helm get manifest <release>
+helm get notes <release>
+helm get all <release>
+helm get hooks <release>
+```
+
+- `values` → current values used
+    
+- `manifest` → generated Kubernetes YAML
+    
+- `notes` → post-install instructions
+    
+- `all` → everything
+    
+- `hooks` → lifecycle hooks (pre/post install etc.)
+    
+
+---
+## 🔹 Values Hierarchy (VERY IMPORTANT 🔥)
+
+Priority (low → high):
+
+1. Chart `values.yaml`
+    
+2. Parent chart `values.yaml`
+    
+3. User file → `-f values.yaml`
+    
+4. CLI → `--set`
+    
+
+👉 Highest wins = `--set`
+
+---
+## 🔹 Deleting Default Values (Null Override)
+
+```bash
+helm install <release> <chart> \
+  --set service.nodePort=null
+```
+
+- Removes the key from final config
+    
+- Kubernetes may assign default value automatically
+
+⚠️ Important:
+
+- Not always “assign port automatically”
+    
+- Depends on resource type (e.g., Service behavior)
+        
+---
+
