@@ -257,7 +257,6 @@ helm install <release> <chart> --dry-run --debug
 
 - See full rendered manifests + logs
     
-
 ---
 ## 🔹 Helm Get Commands (Inspect Release)
 
