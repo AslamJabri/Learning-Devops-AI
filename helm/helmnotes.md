@@ -315,3 +315,291 @@ helm install <release> <chart> \
         
 ---
 
+Helm Chart Folder Structure Notes
+
+---
+
+# 🔹 Create Helm Chart
+```bash
+helm create <chart-folder-name>
+```
+Example:
+
+```bash
+helm create myapp
+```
+This generates the default Helm chart structure.
+
+---
+# 📂 Helm Chart Structure
+
+```text
+myapp/
+├── .helmignore
+├── Chart.yaml
+├── values.yaml
+├── charts/
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── serviceaccount.yaml
+    ├── ingress.yaml
+    ├── hpa.yaml
+    ├── httproute.yaml
+    ├── NOTES.txt
+    ├── _helpers.tpl
+    └── tests/
+        └── test-connection.yaml
+```
+
+---
+# 🔹 .helmignore
+
+Similar to `.gitignore`
+
+Used to ignore files when packaging charts.
+
+Example:
+
+```text
+.git/
+README.md
+```
+
+---
+# 🔹 Chart.yaml
+
+Contains chart metadata.
+
+Example fields:
+
+```yaml
+apiVersion: v2
+name: myapp
+description: Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0"
+```
+
+### Important Fields
+
+| Field         | Meaning                          |
+| ------------- | -------------------------------- |
+| `apiVersion`  | Helm chart API version           |
+| `name`        | Chart name                       |
+| `description` | Information about chart          |
+| `type`        | `application` or `library`       |
+| `version`     | Helm chart version               |
+| `appVersion`  | Application/Docker image version |
+
+---
+# 🔹 application vs library
+
+## application
+
+- Deployable chart
+- Creates Kubernetes resources
+Example:
+
+- nginx app
+- springboot app
+## library
+
+- Reusable helper chart
+- Cannot be deployed directly
+- Used for shared templates/functions
+
+---
+# 🔹 values.yaml
+
+Contains default configuration values.
+
+Example:
+
+```yaml
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+```
+
+Used to customize deployment without editing templates.
+
+Override using:
+
+```bash
+--set
+-f values.yaml
+```
+
+---
+# 🔹 charts/ Folder
+
+Contains dependent/sub charts.
+
+Example:
+
+```text
+Parent Chart → UMS Application
+Sub Chart → MySQL Chart
+```
+
+Used for:
+
+- databases
+- redis
+- rabbitmq
+- shared services
+---
+# 🔹 templates/ Folder
+
+Contains Kubernetes manifest templates.
+
+Helm processes these files using:
+
+- GO templating engine
+- values from `values.yaml`
+
+Generates final Kubernetes YAML manifests.
+
+Common files:
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+- hpa.yaml
+
+---
+# 🔹 Existing Kubernetes YAML → Helm
+
+If Kubernetes manifests already exist:
+
+1. Move YAML files into `templates/`
+2. Replace hardcoded values with Helm variables
+Example:
+Before:
+
+```yaml
+replicas: 2
+```
+
+After:
+
+```yaml
+replicas: {{ .Values.replicaCount }}
+```
+
+Then deploy using:
+
+```bash
+helm install
+```
+
+---
+# 🔹 templates/_helpers.tpl
+
+Used for reusable template helpers.
+
+Files beginning with `_`  
+DO NOT generate Kubernetes manifests.
+
+Used for:
+
+- reusable labels
+- naming conventions
+- selectors
+- common template logic
+Example:
+
+```yaml
+{{- define "myapp.labels" -}}
+app: nginx
+env: prod
+{{- end }}
+```
+
+Use helper:
+
+```yaml
+{{ include "myapp.labels" . }}
+```
+
+---
+# 🔹 NOTES.txt
+Displayed after successful install.
+Usually contains:
+- access URLs
+- kubectl commands
+- login instructions
+
+---
+# 🔹 tests/ Folder
+
+Contains Helm test manifests.
+
+Example:
+
+```text
+test-connection.yaml
+```
+
+Run tests:
+
+```bash
+helm test <release-name>
+```
+
+Used to verify:
+
+- app connectivity
+- service availability
+- deployment success
+---
+# 🧠 Important Real-World Understanding
+
+## Helm Flow
+
+```text
+values.yaml
+      ↓
+templates/*.yaml
+      ↓
+GO template rendering
+      ↓
+Final Kubernetes manifests
+      ↓
+kubectl applies resources
+```
+
+---
+# 🔥 Most Important Files in Real Projects
+
+|File|Importance|
+|---|---|
+|Chart.yaml|Chart metadata|
+|values.yaml|Environment configs|
+|templates/deployment.yaml|Main workload|
+|templates/service.yaml|Networking|
+|_helpers.tpl|Reusable logic|
+
+---
+## NOTES
+- Why do we need templates/NOTES.txt?
+	- This is an optional file which provide important information about our helm chart.
+		- EX:How to access the application deployed using this Helm chart
+- How does template/NOTES.txt work?
+	- Notes.txt file is rendered same as regular template file by HELM.
+	- The main difference is after NOTES.txt rendered its not sent to Kubernetes cluster but the output is displayed in the command line.
+	- As it behaves same as regular Helm Templates we can fetch values from the values.yaml file we can fetch values from the built-in objects. Chart.Release, add if condition blocks use flow control function pipelines and so on.
+- tests folder
+	- We write tests that validate our chart works as expected when it is installed.
+	- These tests also help chart consumer understand what this helm chart is supposed to do.
+- README.md
+	- We will document on how to use this HELM chart in this file.
+- LICENSE
+	- LICENSE file about usage of helm chart.
