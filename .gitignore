@@ -11,6 +11,7 @@ __pycache__/
 venv/
 ENV/
 env/
+**/lenv
 
 # Pipenv (if you use it outside the dsa-python/import folder)
 .env
@@ -23,7 +24,7 @@ env/
 # ==========================================
 # Local .terraform directories (contains providers and modules)
 **/.terraform/
-
+.DS_Store
 # Terraform State Files (CRITICAL: Never commit these as they may contain secrets)
 *.tfstate
 *.tfstate.*
